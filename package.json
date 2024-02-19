@@ -2,7 +2,7 @@
   "name": "vue-flowchart",
   "private": true,
   "version": "0.0.1",
-  "author": "Rajaonarivony Lantonirina Onitiana Mamisoa <ramamilanto@gmail.com>",
+  "author": "NGO",
   "scripts": {
     "dev": "vite --host",
     "build": "vite build",
