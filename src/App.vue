@@ -41,21 +41,22 @@ export default defineComponent({
       ],
       edges:[
         {
-          id: 'e1-2',
-          label: 'Request 2',
-          source: '2',
-          target: '3',
-          animated: false,
-          data:{
-            serialAPI:['e1-2','e4-5'],
-            nodes:['2','3','5']
-          }
-        },
-        {
           id: 'e1-3',
           label: 'Request 1',
           source: '1',
           target: '3',
+          animated: false,
+          data:{
+            serialAPI:['e1-3','e3-4'],
+            nodes:['1','3','4']
+          }
+        },
+        {
+          id: 'e3-4',
+          // type: 'smoothstep',
+          label: 'Request 1',
+          source: '3',
+          target: '4',
           animated: false,
           data:{
             serialAPI:['e1-3','e3-4'],
@@ -74,15 +75,14 @@ export default defineComponent({
           }
         },
         {
-          id: 'e3-4',
-          // type: 'smoothstep',
-          label: 'Request 1',
-          source: '3',
-          target: '4',
+          id: 'e1-2',
+          label: 'Request 2',
+          source: '2',
+          target: '3',
           animated: false,
           data:{
-            serialAPI:['e1-3','e3-4'],
-            nodes:['1','3','4']
+            serialAPI:['e1-2','e4-5'],
+            nodes:['2','3','5']
           }
         },
         {
