@@ -5,7 +5,7 @@ import '@vue-flow/controls/dist/style.css';
 import '@vue-flow/minimap/dist/style.css';
 import {onMounted, toRefs,onErrorCaptured, defineComponent, reactive} from "vue";
 
-import { VueFlow, useVueFlow,MarkerType } from "@vue-flow/core";
+import { VueFlow, useVueFlow } from "@vue-flow/core";
 
 import * as _ from "lodash";
 
@@ -32,11 +32,12 @@ export default defineComponent({
 
     const state = reactive({
       nodes:[
-        { id: '1', label: 'Service 1', position: { x: 150, y: 0 }, class: 'light' },
-        { id: '2', label: 'Service 2', position: { x: 400, y: 100 }, class: 'light' },
-        { id: '3', label: 'Service 3', position: { x: 300, y: 250 }, class: 'light' },
-        { id: '4', label: 'Service 4', position: { x: 400, y: 400 }, class: 'light' },
-        { id: '5', label: 'Service 5', position: { x: 100, y: 500 }, class: 'light' },
+        { id: '1', label: 'Service 1', position: { x: 150, y: 0 }, class: 'default' },
+        { id: '2', label: 'Service 2', position: { x: 400, y: 100 }, class: 'default' },
+        { id: '3', label: 'Service 3', position: { x: 300, y: 250 }, class: 'default' },
+        { id: '4', label: 'Service 4', position: { x: 400, y: 400 }, class: 'default' },
+        { id: '5', label: 'Service 5', position: { x: 100, y: 500 }, class: 'default' },
+        { id: '6', label: 'Service 6', position: { x: 100, y: 350 }, class: 'default' },
       ],
       edges:[
         {
@@ -46,7 +47,8 @@ export default defineComponent({
           target: '3',
           animated: false,
           data:{
-            serialAPI:['e1-2','e4-5']
+            serialAPI:['e1-2','e4-5'],
+            nodes:['2','3','5']
           }
         },
         {
@@ -56,7 +58,8 @@ export default defineComponent({
           target: '3',
           animated: false,
           data:{
-            serialAPI:['e1-3','e3-4']
+            serialAPI:['e1-3','e3-4'],
+            nodes:['1','3','4']
           }
         },
         {
@@ -66,7 +69,8 @@ export default defineComponent({
           target: '5',
           animated: false,
           data:{
-            serialAPI:['e1-2','e4-5']
+            serialAPI:['e1-2','e4-5'],
+            nodes:['2','3','5']
           }
         },
         {
@@ -77,7 +81,19 @@ export default defineComponent({
           target: '4',
           animated: false,
           data:{
-            serialAPI:['e1-3','e3-4']
+            serialAPI:['e1-3','e3-4'],
+            nodes:['1','3','4']
+          }
+        },
+        {
+          id: 'e3-6',
+          label: 'Request 3',
+          source: '3',
+          target: '6',
+          animated: false,
+          data:{
+            serialAPI:['e3-6'],
+            nodes:['3','6']
           }
         },
       ]
@@ -88,9 +104,10 @@ export default defineComponent({
     };
     const onClickEdge = (event) => {
       let serialAPI = event.edge.data.serialAPI;
-      let result = [];
+      let nodes = event.edge.data.nodes;
+      let edges_result = [];
+      let nodes_result = [];
       _.forEach(state.edges,(i) => {
-        console.log(i)
         if (serialAPI.includes(i.id)){
           i.animated = true;
           i['style'] = { stroke: 'red' }
@@ -100,9 +117,18 @@ export default defineComponent({
           i['style'] = {}
           i['labelBgStyle'] = {}
         }
-        result.push(JSON.parse(JSON.stringify(i)))
-      })
-      state.edges = result
+        edges_result.push(JSON.parse(JSON.stringify(i)))
+      });
+      _.forEach(state.nodes,(i) => {
+        if (nodes.includes(i.id)){
+          i.class = "active"
+        }else{
+          i.class = "not_active"
+        }
+        nodes_result.push(JSON.parse(JSON.stringify(i)))
+      });
+      state.nodes = nodes_result
+      state.edges = edges_result
     };
     const onChange = (event) => {
       console.log("changed")
@@ -219,5 +245,12 @@ body,
 .vue-flow__controls-button {
   margin: 0.3rem;
   border: 1px grey solid;
+}
+.active{
+  border:1px solid orange;
+}
+.not_active{
+  background: #dadada7a;
+  color: #999;
 }
 </style>
