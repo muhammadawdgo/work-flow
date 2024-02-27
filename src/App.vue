@@ -3,7 +3,7 @@ import "@vue-flow/core/dist/style.css";
 import "@vue-flow/core/dist/theme-default.css";
 import '@vue-flow/controls/dist/style.css';
 import '@vue-flow/minimap/dist/style.css';
-import {onMounted, toRefs,onErrorCaptured, defineComponent, reactive} from "vue";
+import {onMounted, toRefs,onErrorCaptured, defineComponent, reactive , inject} from "vue";
 
 import { VueFlow, useVueFlow } from "@vue-flow/core";
 
@@ -12,6 +12,7 @@ import * as _ from "lodash";
 import { Background } from '@vue-flow/background';
 import { Controls } from '@vue-flow/controls';
 import { MiniMap } from '@vue-flow/minimap';
+import Swal from "sweetalert2/dist/sweetalert2.min.js";
 
 export default defineComponent({
   name: 'all-elements',
@@ -22,6 +23,8 @@ export default defineComponent({
     onErrorCaptured((e)=>{
       console.log(e)
     })
+
+
     const {
       onPaneReady,
     } = useVueFlow();
@@ -32,83 +35,286 @@ export default defineComponent({
 
     const state = reactive({
       nodes:[
-        { id: '1', label: 'Service 1', position: { x: 150, y: 0 }, class: 'default' },
-        { id: '2', label: 'Service 2', position: { x: 400, y: 100 }, class: 'default' },
-        { id: '3', label: 'Service 3', position: { x: 300, y: 250 }, class: 'default' },
-        { id: '4', label: 'Service 4', position: { x: 400, y: 400 }, class: 'default' },
-        { id: '5', label: 'Service 5', position: { x: 100, y: 500 }, class: 'default' },
-        { id: '6', label: 'Service 6', position: { x: 100, y: 350 }, class: 'default' },
+        // apps
+        { id: 'app-1', label: 'MOBILE APP',type:'app', position: { x: 0, y: 0 }, class: 'default', style: { backgroundColor: 'orange' }},
+
+
+        // services
+        { id: 'service-1', label: 'MOBILE BFF', position: { x: 250, y: 0 }, class: 'default' },
+        { id: 'service-2', label: 'CATALOG', position: { x: 600, y: 0 }, class: 'default' ,parentNode: 'p1'},
+
+
+        // connections
+        { id: 'connection-1', label: 'Redis', position: { x: 200, y: 800 }, class: 'default' ,
+          style: { backgroundColor: 'rgba(255,1,39,0.75)',color:"#FFF" },
+        },
+        { id: 'connection-2', label: 'MYSQL', position: { x: 500, y: 800 }, class: 'default' ,
+          style: { backgroundColor: 'rgba(255,1,39,0.75)',color:"#FFF" },
+        },
+
+
+        // requests
+        { id: 'request-1', label: 'RQ', position: { x: 0, y: 100 }, class: 'bg-request',
+          style: { backgroundColor: 'rgba(16, 185, 129, 0.5)', width: '40px', height: '40px',borderRadius:"50%" },
+          data:{
+            request:{},
+            response:{},
+          }
+        },
+        { id: 'request-2', label: 'RQ', position: { x: 400, y: 100 }, class: 'bg-request',
+          style: { backgroundColor: 'rgba(16, 185, 129, 0.5)', width: '40px', height: '40px',borderRadius:"50%" },
+          data:{
+            request:{},
+            response:{},
+          }
+        },
+        { id: 'request-3', label: 'RQ', position: { x: 200, y: 200 }, class: 'bg-request',
+          style: { backgroundColor: 'rgba(16, 185, 129, 0.5)', width: '40px', height: '40px',borderRadius:"50%" },
+          data:{
+            request:{},
+            response:{},
+          }
+        },
+        { id: 'request-4', label: 'RQ', position: { x: 600, y: 300 }, class: 'bg-request',
+          style: { backgroundColor: 'rgba(16, 185, 129, 0.5)', width: '40px', height: '40px',borderRadius:"50%" },
+          data:{
+            request:{},
+            response:{},
+          }
+        },
+        { id: 'request-5', label: 'RQ', position: { x: 500, y: 400 }, class: 'bg-request',
+          style: { backgroundColor: 'rgba(16, 185, 129, 0.5)', width: '40px', height: '40px',borderRadius:"50%" },
+          data:{
+            request:{},
+            response:{},
+          }
+        },
+        { id: 'request-6', label: 'RQ', position: { x: 0, y: 200 }, class: 'bg-request',
+          style: { backgroundColor: 'rgba(16, 185, 129, 0.5)', width: '40px', height: '40px',borderRadius:"50%" },
+          data:{
+            request:{},
+            response:{},
+          }
+        },
+        { id: 'request-7', label: 'RQ', position: { x: 300, y: 300 }, class: 'bg-request',
+          style: { backgroundColor: 'rgba(16, 185, 129, 0.5)', width: '40px', height: '40px',borderRadius:"50%" },
+          data:{
+            request:{},
+            response:{},
+          }
+        },
+
+        { id: 'response-1', label: 'RS', position: { x: 500, y: 200 }, class: 'bg-request',
+          style: { backgroundColor: 'rgba(255,1,39,0.75)', width: '40px', height: '40px',borderRadius:"50%" },
+          data:{
+            request:{},
+            response:{},
+          }
+        },
       ],
       edges:[
         {
-          id: 'e1-3',
-          label: 'Request 1',
-          source: '1',
-          target: '3',
+          id:'app-1-request-1',
+          label: 'Check Update',
+          source: 'app-1',
+          target: 'request-1',
           animated: false,
           data:{
-            serialAPI:['e1-3','e3-4'],
-            nodes:['1','3','4']
+            serial_api_flow:['app-1-request-1','request-1-service-1','service-1-request-2','request-2-connection-1','connection-1-response-1','response-1-service-1','service-1-request-3','request-3-service-2','connection-1-service-2','service-2-connection-2','service-2-connection-1','service-2-request-4','request-4-connection-2','service-2-request-5','request-5-connection-1'],
+            nodes:['app-1','service-1','service-2','request-1','request-2','request-3','response-1']
           }
         },
         {
-          id: 'e3-4',
-          // type: 'smoothstep',
-          label: 'Request 1',
-          source: '3',
-          target: '4',
+          id:'request-1-service-1',
+          label: '',
+          source: 'request-1',
+          target: 'service-1',
           animated: false,
           data:{
-            serialAPI:['e1-3','e3-4'],
-            nodes:['1','3','4']
+            serial_api_flow:['app-1-request-1','request-1-service-1','service-1-request-2','request-2-connection-1','connection-1-response-1','response-1-service-1','service-1-request-3','request-3-service-2','connection-1-service-2','service-2-connection-2','service-2-connection-1','service-2-request-4','request-4-connection-2','service-2-request-5','request-5-connection-1'],
+            nodes:['app-1','service-1','service-2','request-1','request-2','request-3','response-1']
           }
         },
         {
-          id: 'e4-5',
-          label: 'Request 2',
-          source: '3',
-          target: '5',
+          id:'service-1-request-2',
+          label: 'Reading',
+          source: 'service-1',
+          target: 'request-2',
           animated: false,
           data:{
-            serialAPI:['e1-2','e4-5'],
-            nodes:['2','3','5']
+            serial_api_flow:['app-1-request-1','request-1-service-1','service-1-request-2','request-2-connection-1','connection-1-response-1','response-1-service-1','service-1-request-3','request-3-service-2','connection-1-service-2','service-2-connection-2','service-2-connection-1','service-2-request-4','request-4-connection-2','service-2-request-5','request-5-connection-1'],
+            nodes:['app-1','service-1','service-2']
           }
         },
         {
-          id: 'e1-2',
-          label: 'Request 2',
-          source: '2',
-          target: '3',
+          id:'request-2-connection-1',
+          label: 'Redis',
+          source: 'request-2',
+          target: 'connection-1',
           animated: false,
           data:{
-            serialAPI:['e1-2','e4-5'],
-            nodes:['2','3','5']
+            serial_api_flow:['app-1-request-1','request-1-service-1','service-1-request-2','request-2-connection-1','connection-1-response-1','response-1-service-1','service-1-request-3','request-3-service-2','connection-1-service-2','service-2-connection-2','service-2-connection-1','service-2-request-4','request-4-connection-2','service-2-request-5','request-5-connection-1'],
+            nodes:['app-1','service-1','service-2']
           }
         },
         {
-          id: 'e3-6',
-          label: 'Request 3',
-          source: '3',
-          target: '6',
+          id:'connection-1-response-1',
+          label: 'Response',
+          source: 'connection-1',
+          target: 'response-1',
           animated: false,
           data:{
-            serialAPI:['e3-6'],
-            nodes:['3','6']
+            serial_api_flow:['app-1-request-1','request-1-service-1','service-1-request-2','request-2-connection-1','connection-1-response-1','response-1-service-1','service-1-request-3','request-3-service-2','connection-1-service-2','service-2-connection-2','service-2-connection-1','service-2-request-4','request-4-connection-2','service-2-request-5','request-5-connection-1'],
+            nodes:['app-1','service-1','service-2']
+          }
+        },
+        {
+          id:'response-1-service-1',
+          label: '',
+          source: 'response-1',
+          target: 'service-1',
+          animated: false,
+          data:{
+            serial_api_flow:['app-1-request-1','request-1-service-1','service-1-request-2','request-2-connection-1','connection-1-response-1','response-1-service-1','service-1-request-3','request-3-service-2','connection-1-service-2','service-2-connection-2','service-2-connection-1','service-2-request-4','request-4-connection-2','service-2-request-5','request-5-connection-1'],
+            nodes:['app-1','service-1','service-2']
+          }
+        },
+        {
+          id:'service-1-request-3',
+          label: 'api/v2/internal-check-update',
+          source: 'service-1',
+          target: 'request-3',
+          animated: false,
+          data:{
+            serial_api_flow:['app-1-request-1','request-1-service-1','service-1-request-2','request-2-connection-1','connection-1-response-1','response-1-service-1','service-1-request-3','request-3-service-2','connection-1-service-2','service-2-connection-2','service-2-connection-1','service-2-request-4','request-4-connection-2','service-2-request-5','request-5-connection-1'],
+            nodes:['app-1','service-1','service-2']
+          }
+        },
+        {
+          id:'request-3-service-2',
+          label: '',
+          source: 'request-3',
+          target: 'service-2',
+          animated: false,
+          data:{
+            serial_api_flow:['app-1-request-1','request-1-service-1','service-1-request-2','request-2-connection-1','connection-1-response-1','response-1-service-1','service-1-request-3','request-3-service-2','connection-1-service-2','service-2-connection-2','service-2-connection-1','service-2-request-4','request-4-connection-2','service-2-request-5','request-5-connection-1'],
+            nodes:['app-1','service-1','service-2']
+          }
+        },
+        {
+          id:'service-2-request-4',
+          label: 'Read',
+          source: 'service-2',
+          target: 'request-4',
+          animated: false,
+          data:{
+            serial_api_flow:['app-1-request-1','request-1-service-1','service-1-request-2','request-2-connection-1','connection-1-response-1','response-1-service-1','service-1-request-3','request-3-service-2','connection-1-service-2','service-2-connection-2','service-2-connection-1','service-2-request-4','request-4-connection-2','service-2-request-5','request-5-connection-1'],
+            nodes:['app-1','service-1','service-2']
+          }
+        },
+        {
+          id:'request-4-connection-2',
+          label: 'Read',
+          source: 'request-4',
+          target: 'connection-2',
+          animated: false,
+          data:{
+            serial_api_flow:['app-1-request-1','request-1-service-1','service-1-request-2','request-2-connection-1','connection-1-response-1','response-1-service-1','service-1-request-3','request-3-service-2','connection-1-service-2','service-2-connection-2','service-2-connection-1','service-2-request-4','request-4-connection-2','service-2-request-5','request-5-connection-1'],
+            nodes:['app-1','service-1','service-2']
+          }
+        },
+        {
+          id:'service-2-request-5',
+          label: 'Write',
+          source: 'service-2',
+          target: 'request-5',
+          animated: false,
+          data:{
+            serial_api_flow:['app-1-request-1','request-1-service-1','service-1-request-2','request-2-connection-1','connection-1-response-1','response-1-service-1','service-1-request-3','request-3-service-2','connection-1-service-2','service-2-connection-2','service-2-connection-1','service-2-request-4','request-4-connection-2','service-2-request-5','request-5-connection-1'],
+            nodes:['app-1','service-1','service-2']
+          }
+        },
+        {
+          id:'request-5-connection-1',
+          label: 'Write',
+          source: 'request-5',
+          target: 'connection-1',
+          animated: false,
+          data:{
+            serial_api_flow:['app-1-request-1','request-1-service-1','service-1-request-2','request-2-connection-1','connection-1-response-1','response-1-service-1','service-1-request-3','request-3-service-2','connection-1-service-2','service-2-connection-2','service-2-connection-1','service-2-request-4','request-4-connection-2','service-2-request-5','request-5-connection-1'],
+            nodes:['app-1','service-1','service-2']
+          }
+        },
+          //
+
+        {
+          id:'app-1-request-6',
+          label: '/user',
+          source: 'app-1',
+          target: 'request-6',
+          animated: false,
+          data:{
+            serial_api_flow:['app-1-request-6','request-6-service-2','service-2-request-7','request-7-connection-2'],
+            nodes:['app-1','service-2']
+          }
+        },
+        {
+          id:'request-6-service-2',
+          label: '',
+          source: 'request-6',
+          target: 'service-2',
+          animated: false,
+          data:{
+            serial_api_flow:['app-1-request-6','request-6-service-2','service-2-request-7','request-7-connection-2'],
+            nodes:['app-1','service-2']
+          }
+        },
+        {
+          id:'service-2-request-7',
+          label: '',
+          source: 'service-2',
+          target: 'request-7',
+          animated: false,
+          data:{
+            serial_api_flow:['app-1-request-6','request-6-service-2','service-2-request-7','request-7-connection-2'],
+            nodes:['app-1','service-2']
+          }
+        },
+        {
+          id:'request-7-connection-2',
+          label: '',
+          source: 'request-7',
+          target: 'connection-2',
+          animated: false,
+          data:{
+            serial_api_flow:['app-1-request-6','request-6-service-2','service-2-request-7','request-7-connection-2'],
+            nodes:['app-1','service-2']
           }
         },
       ]
     })
     const onClickNode = (event) => {
-      console.log("clicked")
-      console.log(event)
+      Swal.fire({
+        html:`
+          <div>:: REQUEST ::</div><br>
+          <div>
+                <pre><code>{{${JSON.stringify(event.node.data)}}}</code></pre>
+          </div>
+          <hr>
+          <div>:: RESPONSE ::</div><br>
+          <div>
+                <pre><code>{{${JSON.stringify(event.node.data)}}}</code></pre>
+          </div>
+        `
+      })
     };
     const onClickEdge = (event) => {
-      let serialAPI = event.edge.data.serialAPI;
+      let serial_api_flow = event.edge.data.serial_api_flow;
       let nodes = event.edge.data.nodes;
       let edges_result = [];
       let nodes_result = [];
       _.forEach(state.edges,(i) => {
-        if (serialAPI.includes(i.id)){
+        if (serial_api_flow.includes(i.id)){
           i.animated = true;
           i['style'] = { stroke: 'red' }
           i['labelBgStyle'] =  { fill: 'orange' }
@@ -165,6 +371,11 @@ export default defineComponent({
                :min-zoom="0.05"
                @nodeDoubleClick="onClickNode"
                @edgeDoubleClick="onClickEdge">
+        <template #node-app="options">
+          <div class="vue-flow__node-default nopan selectable default" :class="options.class" :style="options.style">
+            {{options.label}}
+          </div>
+        </template>
         <Background pattern-color="grey" gap="16" size="1.2" />
         <Controls />
         <MiniMap />
